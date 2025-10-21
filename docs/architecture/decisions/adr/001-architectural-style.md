@@ -1,87 +1,120 @@
-# ADR 001 — Architectural Style for Complaint Management System (CMS)
+ADR #1 – Architectural Style for the Complaint Management System (CMS)
+Date: 21 Oct 2025  Status: Accepted
 
-**Status:** Accepted  
-**Date:** 2 October 2025  
-**Decision ID:** ADR-001
+Context and Problem Statement
+ABC Limited requires a scalable, secure, and accessible Complaint Management System (CMS) that serves multiple client organisations (tenants) and supports web, telephone, and future chatbot channels.
+ The chosen architecture must:
+Provide clear separation between presentation, business logic, and data management.
 
-## Context and Problem Statement
-ABC Limited requires a web-based Complaint Management System (CMS) that supports multiple actor roles (consumer, help desk agent, supervisor/manager), provides timely status updates and notifications, and can evolve as new channels and integrations are added (e.g., mobile app, chatbot, analytics).
 
-We need an architectural style that promotes clear separation of concerns, maintainability, and testability, while allowing straightforward deployment today and a path to scale later. This ADR focuses only on the architectural style; technology choices (frameworks, libraries, databases) are documented in separate ADRs.
+Support 24 / 7 availability and growth of 10 % per year.
 
-## Decision Drivers
-- Separation of concerns between UI, business rules, and data access
-- Maintainability and ease of onboarding for future contributors
-- Testability of domain logic independent of UI or storage
-- Straightforward initial deployment with a path to scale (e.g., evolve to 3‑tier or services later)
-- Alignment with assessment brief, case study, user stories, use cases, and the C4 System Context
 
-## Considered Options
-1. **Layered Architecture** (Presentation, Business Logic/Application, Data Access)
-2. **Three-Tier Architecture** (UI tier, Application tier, Data tier on separate nodes)
-3. **Client–Server Architecture** (thin client / thick server without strict layering)
-4. **Service-Oriented Architecture (SOA) / Microservices**
-5. **Generic monolithic web application** (no explicit layering)
+Enforce multi-tenant data isolation, security, and auditability.
 
-## Decision Outcome
-**Chosen:** **Layered Architecture** (logical 3-layer model: Presentation, Business Logic/Application, Data Access).
 
-### Rationale
-- Provides the clearest separation of concerns and supports modular growth of CMS features such as complaint intake, triage, assignment, resolution, status updates, and customer feedback.
-- Keeps domain and application rules independent from UI and persistence details, improving testability.
-- Enables a clean evolution path: the logical layers can later map to physical tiers (e.g., separate app and DB servers) or be extracted into services where justified.
-- Aligns with the C4 System Context interactions and role boundaries defined in the assessment materials.
+Allow straightforward integration with external authentication (SSO) and notification services.
 
-## Consequences
 
-### Positive
-- **Maintainability & testability:** Domain logic can be unit-tested without UI or database.
-- **Modularity:** Features and cross‑cutting concerns (auth, logging, validation) can be added at appropriate layers.
-- **Evolution path:** Can scale to 3‑tier or services in future without redesigning the whole system.
+Be maintainable and understandable by a small development team within the module timeframe.
 
-### Negative
-- **Discipline required:** Team must respect layer boundaries to avoid logic in the UI or leaky data access concerns.
-- **Initial refactoring effort:** Some code may need reorganizing into clear layer modules/packages.
 
-## Pros and Cons of the Options
 
-### 1. Layered Architecture
-- **Pros:** Strong separation of concerns; testable; familiar to most web dev teams; easy to onboard; clear mapping to C4 containers/components.
-- **Cons:** Requires governance to prevent layer violations; adds some structural overhead.
+Considered Options
+Option
+Description
+Pros
+Cons
+1. Layered Architecture (Monolithic deployment)
+Application structured into Presentation, Business/Service, and Data Access layers within a single system.
+• Simple and fast to develop.
+• Well suited to small teams.
+• Supports clear separation of concerns.
+• Easy to deploy and test as one unit.
+• Limited independent scalability.
+• Potential coupling between modules if interfaces not enforced.
+2. Service-Oriented Architecture (SOA / Microservices)
+Split the system into discrete services (Complaint, User, Notification, Analytics) communicating via REST APIs.
+• High scalability and fault isolation.
+• Flexible technology choices.
+• Too complex for the project scale.
+• Requires additional DevOps, API gateway, and monitoring infrastructure.
+3. Event-Driven Architecture
+Components communicate asynchronously using message queues or event brokers.
+• Excellent decoupling and resilience.
+• Ideal for high throughput.
+• Adds unnecessary infrastructure and conceptual overhead for a moderate PoC system.
 
-### 2. Three-Tier Architecture
-- **Pros:** Operational scalability; can allocate resources independently per tier.
-- **Cons:** Higher infra/ops complexity for the current scope; not necessary until load justifies it.
 
-### 3. Client–Server Architecture
-- **Pros:** Simple to implement and deploy; low ceremony.
-- **Cons:** Weaker separation of concerns; harder to maintain/test as complexity grows.
+Decision Outcome
+Chosen option: ✅ Layered Architecture (Monolithic deployment)
+The CMS will adopt a three-layer architectural pattern consisting of:
+Presentation layer – user interface for all roles and channels.
 
-### 4. SOA / Microservices
-- **Pros:** Strong autonomy and independent scaling of services; tech heterogeneity.
-- **Cons:** Operational overhead, distributed complexity, and premature for current scope.
 
-### 5. Generic Monolith (no explicit layering)
-- **Pros:** Fast to start.
-- **Cons:** Becomes brittle as features and team size grow; poor testability and maintainability.
+Business layer – complaint workflows, tenant rules, validation, notifications.
 
-## Decision
-Adopt **Layered Architecture** with three logical layers:
-- **Presentation Layer:** Web UI/controllers, request/response mapping, DTOs/view models.
-- **Business/Application Layer:** Use-cases, domain services, validation, orchestration, policies.
-- **Data Access Layer:** Repositories/DAOs, persistence mapping, external data gateways.
 
-## Compliance & Next Steps
-- Establish folders/modules for each layer and define interface contracts between layers.
-- Introduce automated tests focused on the Business/Application layer.
-- Document cross‑cutting patterns (logging, error handling, validation) and where they live.
-- Reflect this decision in the C4 Container/Component diagrams (L2/L3).
+Data access layer – persistent storage, security, and audit logging.
 
-## Related Decisions
-- ADR-002 — Authentication & Authorization approach (planned)
-- ADR-003 — Technology stack selection (planned)
-- ADR-004 — Integration mechanisms for notifications and external services (planned)
 
-## References
-- About MADR: https://adr.github.io/madr/  
-- MADR templates: https://github.com/adr/madr/tree/4.0.0/template
+Justification:
+Best fit for a medium-sized multi-tenant web system requiring clear separation of concerns.
+
+
+Meets the case-study goal of complete complaint lifecycle within one bounded context (reflected in C4 Level 1 diagram).
+
+
+Minimises complexity for a university-level project while keeping the design scalable and extensible (individual layers can later evolve into services).
+
+
+Directly supports traceability between requirements, C4 L2 containers (Web App / Backend / DB), and non-functional requirements such as security and availability.
+
+
+
+Consequences
+Positive Impacts
+Rapid development and low operational overhead.
+
+
+High cohesion within layers and ease of testing.
+
+
+Simplified deployment on standard web hosting environments.
+
+
+Consistent mapping between architecture and C4 models.
+
+
+Negative Impacts
+Scaling requires replicating the entire application instance rather than individual modules.
+
+
+Future integration of chatbot or IVR channels will require new interfaces.
+
+
+Potential tight coupling if layer boundaries are not maintained.
+
+
+Mitigation
+Enforce strict layer interfaces and data access policies.
+
+
+Document APIs and module contracts to simplify future refactoring into services.
+
+
+Complement with ADR #2 (Tenant Isolation) and ADR #3 (Authentication & Security) to manage risks.
+
+
+
+References
+SHU Assessment Brief 25-26 – Task 1 Solution Architecture Criteria.
+
+
+ABC Limited Case Study – Multi-tenant requirement and system channels.
+
+
+ISO/IEC 42010:2011 — Architecture Description Standard.
+
+
+Bass, Clements & Kazman (2013). Software Architecture in Practice. Addison-Wesley.
