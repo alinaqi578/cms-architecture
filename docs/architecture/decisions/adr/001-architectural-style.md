@@ -1,9 +1,17 @@
-Status: Accepted Date: 2024-11-20 Context: The Complaint Management System (CMS) requires a robust structure to handle core business logic (complaints workflow), data persistence, and multiple user interfaces (Web/Agent). The system needs to be developed by a single developer within a limited university module timeframe. The key driver is maintainability and simplicity while preparing for future extensibility. Decision: We will adopt a Layered Monolithic Architecture consisting of three distinct layers:
-Presentation Layer: PHP views (HTML/CSS) for Consumer and Agent dashboards.
-Business Logic Layer: Service classes handling RBAC and Tenant Logic.
-Data Access Layer: Repository classes managing SQL interactions. 
-Consequences:
-Positive: Simplifies deployment (single artifact), easier to debug than microservices, and aligns with the "Golden Thread" scope of the assessment.
-Negative: Scaling individual components (e.g., just the reporting engine) is harder than in microservices, but acceptable for the current user load projections. References:
-Fowler, M. (2002). Patterns of Enterprise Application Architecture. Addison-Wesley. (Justification for Layered pattern).
-Bass, L., Clements, P., & Kazman, R. (2012). Software Architecture in Practice. Addison-Wesley.
+ADR 001: Selection of Layered Monolithic Architecture
+
+Status: Accepted | Date: 20-11-2024
+
+Context: The CMS needs to handle complaints, data storage, and different user views (Agent vs Consumer). I initially considered splitting these into different services to make them scalable. However, I am working as a single developer with a strict submission deadline.
+
+Decision: I decided to build a Layered Monolith. The code is organized into layers (Views, Services, Repositories) but runs as one single application.
+
+Alternatives Considered:
+
+Microservices: Rejected. I realized that setting up separate services for a simple PoC would require too much configuration (like API Gateways) and would distract me from the core security requirements.
+
+Serverless: Rejected because debugging "cloud functions" locally is difficult without advanced tools, and I wanted to stick to a standard XAMPP environment.
+
+Justification: This approach is much easier to test and debug. If something breaks, I can see the error in one place rather than tracing it across multiple services. It fits the "Vertical Slice" scope perfectly.
+
+Consequences: If the system grows huge later, it might be harder to split up, but for this project, it is the most efficient choice.
