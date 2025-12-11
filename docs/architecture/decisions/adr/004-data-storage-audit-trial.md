@@ -1,6 +1,6 @@
 ADR 004: Audit Trail for Complaint Lifecycle
 
-Status: Accepted | Date: 2024-11-23
+Status: Accepted | Date: 23-22-2024
 
 Context: The requirement says I need to track the history of a complaint (NFR-04). If I just update the status from "Open" to "Resolved," I lose the record of when it was Open.
 
