@@ -1,7 +1,13 @@
-Status: Accepted Date: 2024-11-23 Context: For compliance in banking/telecom sectors, every change to a complaint's status must be traceable. Overwriting data (e.g., just changing "Open" to "Closed") loses the history of when it happened. Decision: We will use an Event Log Pattern.
-A dedicated complaint_updates table will record every status change.
-The main complaints table holds the current state, while complaint_updates holds the history. 
-Consequences:
-Positive: Provides full traceability (NFR-04) and supports SLA reporting.
-Negative: Increases storage requirements, but deemed negligible for the PoC scope. References:
-Richardson, C. (2018). Microservices Patterns. Manning Publications. (Reference for Event Sourcing concepts applied to Monoliths).
+ADR 004: Audit Trail for Complaint Lifecycle
+
+Status: Accepted | Date: 2024-11-23
+
+Context: The requirement says I need to track the history of a complaint (NFR-04). If I just update the status from "Open" to "Resolved," I lose the record of when it was Open.
+
+Decision: I used an Event Log approach. I created a separate table called complaint_updates that records who changed what and when.
+
+Alternatives Considered:
+
+Database Triggers: Rejected. I find SQL triggers hard to debug. I preferred writing the logic in PHP so I can see exactly what is happening in the code.
+
+Justification: This makes the system compliant with the audit requirements. It also allows me to easily show a "Timeline" of the complaint to the user.
