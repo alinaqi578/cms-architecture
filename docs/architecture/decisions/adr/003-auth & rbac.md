@@ -1,7 +1,15 @@
-Status: Accepted Date: 2024-11-22 Context: The system has distinct user types: Consumers (submitters) and Agents (resolvers). A Consumer must never access Agent functionality. Decision: We will implement Session-Based RBAC.
-User roles (agent, consumer) are stored in the database and loaded into the PHP $_SESSION upon login.
-Every controller script (e.g., agent_dashboard.php) will check $_SESSION['role'] before execution. 
-Consequences:
-Positive: Simple to implement in PHP without external libraries; meets NFR-03 (Security).
-Negative: Session management requires secure handling (e.g., regeneration ID) to prevent hijacking. References:
-NIST. (2016). Role-Based Access Control (RBAC). National Institute of Standards and Technology.
+ADR 003: Role-Based Access Control (RBAC) Implementation
+
+Status: Accepted | Date: 2024-11-22
+
+Context: I have Consumers and Agents logging in. I need a way to stop Consumers from guessing the URL for the Agent Dashboard (e.g., /agent_dashboard.php).
+
+Decision: I implemented Session-Based RBAC. When a user logs in, I save their role (agent or consumer) in the PHP Session. Then, at the top of every sensitive file, I check this session variable.
+
+Alternatives Considered:
+
+Access Control Lists (ACLs): Rejected. Defining complex permission rules for every single button was too complicated for the time I had.
+
+OAuth/Auth0: Rejected. Integrating a third-party login system is too big a scope for this "Vertical Slice." I wanted to demonstrate that I understand how sessions work natively.
+
+Justification: This satisfies NFR-03 (Security) without needing external libraries. It is simple, effective, and easy to test.
