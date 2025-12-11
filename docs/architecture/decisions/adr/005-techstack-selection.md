@@ -1,6 +1,6 @@
 ADR 005: Technology Stack Selection
 
-Status: Accepted | Date: 2024-11-20
+Status: Accepted | Date: 20-11-2024
 
 Context: I needed a stack that is easy to set up locally and supports Sessions and SQL natively.
 
