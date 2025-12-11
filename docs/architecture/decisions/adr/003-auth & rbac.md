@@ -1,6 +1,6 @@
 ADR 003: Role-Based Access Control (RBAC) Implementation
 
-Status: Accepted | Date: 2024-11-22
+Status: Accepted | Date: 22-11-2024
 
 Context: I have Consumers and Agents logging in. I need a way to stop Consumers from guessing the URL for the Agent Dashboard (e.g., /agent_dashboard.php).
 
